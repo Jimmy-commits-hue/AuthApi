@@ -1,5 +1,7 @@
-﻿using AuthApiBackend.Models;
+﻿using AuthApiBackend.Configurations;
+using AuthApiBackend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace AuthApiBackend.Database
 {
@@ -9,18 +11,60 @@ namespace AuthApiBackend.Database
 
         public DbSet<ContactDetails> ContactDetails { get; set; }
 
+        public DbSet<Account> Account { get; set; }
+
+        public DbSet<VerificationToken> VerificationToken { get; set; }
+
+        public DbSet<RefreshTokens> RefreshToken { get; set; }
+
+        public DbSet<Role> Role { get; set; }
+
+        private readonly DatabaseSettings _settings;
+
+        public AuthApiDbContext(IOptions<DatabaseSettings> options)
+        {
+            _settings = options.Value; 
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+
+            string Password = Environment.GetEnvironmentVariable("DB_PASSWORD")!;
+            string password = Password.Split('\\')[1];
+
+            string connectionString = $"Server={_settings.Server};Port={_settings.Port};User={_settings.User};" +
+                $"Database={_settings.Database};Password={password};";
+
+            optionsBuilder.UseMySql(connectionString, MySqlServerVersion.AutoDetect(connectionString));
+
+            base.OnConfiguring(optionsBuilder);
+
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
             modelBuilder.Entity<User>().HasIndex(u => u.Id).IsUnique();
 
             modelBuilder.Entity<User>().HasOne(u => u.ContactDetails).WithOne(u => u.User).HasForeignKey<ContactDetails>(u => u.UserId).
-                OnDelete(DeleteBehavior.Cascade);
-    ;
+                                        OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>().HasOne(u => u.Account).WithOne(u => u.User).HasForeignKey<Account>(u => u.UserId).
+                                        OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>().HasMany(u => u.VerificationToken).WithOne(u => u.User).HasForeignKey(u => u.UserId).
+                                        OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>().HasMany(u => u.RefreshTokens).WithOne(u => u.User).HasForeignKey(u => u.UserId).
+                                       OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>().HasOne(u => u.Role).WithMany(u => u.User).HasForeignKey(u => u.RoleId).IsRequired().
+                                       OnDelete(DeleteBehavior.Cascade);
+    
 
             base.OnModelCreating(modelBuilder);
         }
 
-        public AuthApiDbContext(DbContextOptions<AuthApiDbContext> options) : base(options) { }
     }
+
 }

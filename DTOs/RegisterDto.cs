@@ -31,6 +31,18 @@ namespace AuthApiBackend.DTOs
         [Compare("Email", ErrorMessage = "Email mismatch")]
         public string confirmEmail { get; set; } = string.Empty;
 
+        [Required]
+        [DataType(DataType.Password)]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*[@!&?#])(?=.*[1-9]).{8}$",
+                     ErrorMessage = "Password should contains atleast:" +
+                    "one special character (@!&.?) and should be 8 characters long, must not have a 0")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Password mismatch")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+
     }
 
 }
