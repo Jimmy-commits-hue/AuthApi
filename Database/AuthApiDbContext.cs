@@ -19,9 +19,12 @@ namespace AuthApiBackend.Database
 
         public DbSet<Role> Role { get; set; }
 
+        public DbSet<UserRole> UserRole { get; set; }
+
+
         private readonly DatabaseSettings _settings;
 
-        public AuthApiDbContext(IOptions<DatabaseSettings> options)
+        public AuthApiDbContext( IOptions<DatabaseSettings> options)
         {
             _settings = options.Value; 
         }
@@ -29,15 +32,19 @@ namespace AuthApiBackend.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            string Password = Environment.GetEnvironmentVariable("DB_PASSWORD")!;
-            string password = Password.Split('\\')[1];
+            if (!optionsBuilder.IsConfigured)
+            {
 
-            string connectionString = $"Server={_settings.Server};Port={_settings.Port};User={_settings.User};" +
-                $"Database={_settings.Database};Password={password};";
+                string Password = Environment.GetEnvironmentVariable("DB_PASSWORD")!;
+                string password = Password.Split('\\')[1];
 
-            optionsBuilder.UseMySql(connectionString, MySqlServerVersion.AutoDetect(connectionString));
+                string connectionString = $"Server={_settings.Server};Port={_settings.Port};User={_settings.User};" +
+                    $"Database={_settings.Database};Password={password};";
 
-            base.OnConfiguring(optionsBuilder);
+                optionsBuilder.UseMySql(connectionString, MySqlServerVersion.AutoDetect(connectionString));
+
+                base.OnConfiguring(optionsBuilder);
+            }
 
         }
 
@@ -45,6 +52,8 @@ namespace AuthApiBackend.Database
         {
 
             modelBuilder.Entity<User>().HasIndex(u => u.Id).IsUnique();
+
+            modelBuilder.Entity<Account>().HasIndex(u => u.AccountNumber).IsUnique();   
 
             modelBuilder.Entity<User>().HasOne(u => u.ContactDetails).WithOne(u => u.User).HasForeignKey<ContactDetails>(u => u.UserId).
                                         OnDelete(DeleteBehavior.Cascade);
@@ -58,11 +67,14 @@ namespace AuthApiBackend.Database
             modelBuilder.Entity<User>().HasMany(u => u.RefreshTokens).WithOne(u => u.User).HasForeignKey(u => u.UserId).
                                        OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>().HasOne(u => u.Role).WithMany(u => u.User).HasForeignKey(u => u.RoleId).IsRequired().
+            modelBuilder.Entity<Role>().HasMany(u => u.UserRole).WithOne(u => u.Role).HasForeignKey(u => u.RoleId).
+                                       OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>().HasOne(u => u.UserRole).WithOne(u => u.User).HasForeignKey<UserRole>(u => u.UserId).
                                        OnDelete(DeleteBehavior.Cascade);
     
-
             base.OnModelCreating(modelBuilder);
+
         }
 
     }

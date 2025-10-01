@@ -2,7 +2,6 @@
 using AuthApiBackend.Interfaces.IServices;
 using AuthApiBackend.Repositories;
 using AuthApiBackend.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthApiBackend.RegisterServices
 {
@@ -15,10 +14,14 @@ namespace AuthApiBackend.RegisterServices
             //Services
             Services.AddScoped<IContactDetailsService, ContactDetailsService>();
             Services.AddScoped<IUserService, UserService>();
+            Services.AddScoped<IRoleService, RoleService>();
+            Services.AddScoped<IUserRoleService, UserRoleService>();
 
             //Repositories
             Services.AddScoped<IContactDetailsRepo, ContactDetailsRepo>();
             Services.AddScoped<IUserRepository, UserRepository>();
+            Services.AddScoped<IRoleRepository, RoleRepository>();
+            Services.AddScoped<IUserRoleRepository, UserRoleRepository>();  
 
             return Services;
             

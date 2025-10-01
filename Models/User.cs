@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AuthApiBackend.Models
 {
@@ -15,19 +16,17 @@ namespace AuthApiBackend.Models
 
         public string Surname { get; set; } = null! ;
 
-        public int RoleId { get; set; }
-
         public DateOnly RegistrationDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        public Role Role { get; set; } = null!;
+        public UserRole UserRole { get; set; } = null!;
 
         public ContactDetails? ContactDetails { get; set; } 
 
         public Account? Account { get; set; }
 
-        public List<RefreshTokens> RefreshTokens { get; set; } = new();
+        public ICollection<RefreshTokens> RefreshTokens { get; set; } = new HashSet<RefreshTokens>();
 
-        public List<VerificationToken> VerificationToken { get; set; } = new();
+        public ICollection<VerificationToken> VerificationToken { get; set; } = new HashSet<VerificationToken>();
 
     }
 

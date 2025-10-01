@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthApiBackend.Migrations
 {
     [DbContext(typeof(AuthApiDbContext))]
-    [Migration("20250930121539_Initial")]
+    [Migration("20251001172817_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -32,7 +32,7 @@ namespace AuthApiBackend.Migrations
 
                     b.Property<string>("AccountNumber")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime?>("ExpectedDeleteDate")
                         .HasColumnType("datetime(6)");
@@ -51,6 +51,9 @@ namespace AuthApiBackend.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("AccountNumber")
+                        .IsUnique();
 
                     b.ToTable("Account");
                 });
@@ -128,9 +131,6 @@ namespace AuthApiBackend.Migrations
                     b.Property<DateOnly>("RegistrationDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -140,9 +140,22 @@ namespace AuthApiBackend.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("AuthApiBackend.Models.UserRole", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId");
+
                     b.HasIndex("RoleId");
 
-                    b.ToTable("User");
+                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("AuthApiBackend.Models.VerificationToken", b =>
@@ -204,15 +217,22 @@ namespace AuthApiBackend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AuthApiBackend.Models.User", b =>
+            modelBuilder.Entity("AuthApiBackend.Models.UserRole", b =>
                 {
                     b.HasOne("AuthApiBackend.Models.Role", "Role")
-                        .WithMany("User")
+                        .WithMany("UserRole")
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AuthApiBackend.Models.User", "User")
+                        .WithOne("UserRole")
+                        .HasForeignKey("AuthApiBackend.Models.UserRole", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AuthApiBackend.Models.VerificationToken", b =>
@@ -228,7 +248,7 @@ namespace AuthApiBackend.Migrations
 
             modelBuilder.Entity("AuthApiBackend.Models.Role", b =>
                 {
-                    b.Navigation("User");
+                    b.Navigation("UserRole");
                 });
 
             modelBuilder.Entity("AuthApiBackend.Models.User", b =>
@@ -238,6 +258,9 @@ namespace AuthApiBackend.Migrations
                     b.Navigation("ContactDetails");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("UserRole")
+                        .IsRequired();
 
                     b.Navigation("VerificationToken");
                 });

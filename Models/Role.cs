@@ -10,7 +10,7 @@ namespace AuthApiBackend.Models
 
         public string RoleName { get; set; } = null!;
 
-        public List<User> User { get; set; } = new();
+        public ICollection<UserRole> UserRole = new List<UserRole>();
 
     }
 
