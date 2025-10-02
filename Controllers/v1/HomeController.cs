@@ -2,12 +2,13 @@
 using AuthApiBackend.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthApiBackend.Controllers
+namespace AuthApiBackend.Controllers.v1
 {
-
-    [Route("api/v{version:apiversion}/[controller]")]
+    /// <summary>
+    /// 
+    /// </summary>
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-
     public class HomeController : ControllerBase
     {
 
@@ -16,6 +17,13 @@ namespace AuthApiBackend.Controllers
         private readonly IRoleService roleService;
         private readonly IUserRoleService userRoleService;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userService"></param>
+        /// <param name="contactService"></param>
+        /// <param name="roleService"></param>
+        /// <param name="userRoleService"></param>
         public HomeController(IUserService userService, IContactDetailsService contactService, IRoleService roleService,
             IUserRoleService userRoleService)
         {
@@ -28,7 +36,7 @@ namespace AuthApiBackend.Controllers
         }
 
         /// <summary>
-        /// registration point
+        /// 
         /// </summary>
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
@@ -36,6 +44,7 @@ namespace AuthApiBackend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto user, CancellationToken cancellationToken)
         {
+
             string userId = await userService.CreateUserAsync(user, cancellationToken);
 
             await contactService.CreateUserContactDetails(userId ,user.Email, cancellationToken);

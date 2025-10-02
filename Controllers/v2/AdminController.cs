@@ -2,10 +2,10 @@
 using AuthApiBackend.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthApiBackend.Controllers
+namespace AuthApiBackend.Controllers.v2
 {
 
-    [Route("api/v{version:apiversion}/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
 
     public class AdminController : ControllerBase

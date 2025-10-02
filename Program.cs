@@ -1,5 +1,6 @@
 using AuthApiBackend.Configurations;
-using AuthApiBackend.Controllers;
+using AuthApiBackend.Controllers.v1;
+using AuthApiBackend.Controllers.v2;
 using AuthApiBackend.Database;
 using AuthApiBackend.RegisterServices;
 using DotNetEnv;
@@ -37,6 +38,8 @@ builder.Services.AddApiVersioning(options =>
 });
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetRequiredSection("connectionString"));
+builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
+
 builder.Services.AddDbContext<AuthApiDbContext>();
 
 var app = builder.Build();
@@ -47,8 +50,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
-        options.SwaggerEndpoint("/swagger/v2/swagger.json", "V2");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
     });
 }
 

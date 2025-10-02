@@ -1,4 +1,4 @@
-﻿namespace AuthApiBackend.Models.Enums
+﻿namespace AuthApiBackend.Enums
 {
 
     public enum AccountStatus
