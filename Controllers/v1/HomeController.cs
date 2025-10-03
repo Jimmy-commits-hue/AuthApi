@@ -35,7 +35,12 @@ namespace AuthApiBackend.Controllers.v1
 
         }
 
-     
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto user, CancellationToken cancellationToken)
         {
