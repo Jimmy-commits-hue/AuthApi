@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Cryptography;
 using System.Text;
+using AuthApiBackend.RegisterServices;
+
 
 namespace AuthApiBackend.Utilities
 {
 
     public static class HashHelper
     {
-
+        
         public static string HashId(string id)
         {
 

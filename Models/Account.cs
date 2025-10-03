@@ -1,4 +1,4 @@
-﻿using AuthApiBackend.Models.Enums;
+﻿using AuthApiBackend.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace AuthApiBackend.Models
