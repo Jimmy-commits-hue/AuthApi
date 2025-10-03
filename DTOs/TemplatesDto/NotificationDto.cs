@@ -4,17 +4,19 @@
     public class NotificationDto
     {
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string Surname { get; set; }
+        public string Surname { get; set; } = null!;
 
-        public string Subject { get; set; }
+        public string Subject { get; set; } = null!;
 
-        public string VerificationLink { get; set; }
+        public string ToEmail { get; set; } = null!;
 
-        public string VerificationType { get; set; }
+        public string VerificationLink { get; set; } = string.Empty; 
 
-        public string AccountNumber { get; set; }
+        public string VerificationType { get; set; } = null!;
+
+        public string? AccountNumber { get; set; } = string.Empty;
 
     }
 

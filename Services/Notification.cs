@@ -28,24 +28,39 @@ namespace AuthApiBackend.Services
 
             if (!string.IsNullOrWhiteSpace(notification.VerificationLink))
             {
-                template = "VericationEmail";
+                template = "VericationEmail.cshtml";
             }
             else if (!string.IsNullOrWhiteSpace(notification.AccountNumber))
             {
-                template = "AccountNumber";
+                template = "AccountNumber.cshtml";
             }
 
-            var fetchTemplate = await _engine.CompileRenderAsync(template, notification);
+            var fetchTemplate = string.Empty;
 
+            var retrieveTemplate = _engine.Handler.Cache.RetrieveTemplate(template);
 
+            if (retrieveTemplate.Success)
+            {
+                fetchTemplate = await _engine.RenderTemplateAsync(retrieveTemplate.Template.TemplatePageFactory(), notification);
+            }
+            else
+            {
+                await _engine.CompileTemplateAsync(template);
+                
+                fetchTemplate = await _engine.RenderTemplateAsync(retrieveTemplate.Template.TemplatePageFactory(), notification);
+            }
+
+            await SendEmail(notification.ToEmail, notification.Subject, fetchTemplate);
+                
         }
 
-        public async Task SendEmail(string toEmail, string message)   
+        public async Task SendEmail(string toEmail, string subject, string message)   
         {
 
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress("AuthApi", Environment.GetEnvironmentVariable("FROM_EMAIL")));
             email.To.Add(MailboxAddress.Parse(toEmail));
+            email.Subject = subject; 
 
             var bodyBuilder = new BodyBuilder
             {
